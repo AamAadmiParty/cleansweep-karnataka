@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block content_head %}
+  <h1>Member Registration Form</h1>
+{% endblock %}
+
+{% block content_body %}
+
+    <p>Aam Aadmi Party, Karnataka - member registration for existing and new applicants.</p>
+
+    {% if not userdata %}
+      <div class="section">
+      <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
+      <p>
+        {% for provider in get_oauth_providers() %}
+          <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
+        {% endfor %}
+      </p>
+      </div>
+    {% else %}
+      <div class="row">
+        <div class="col-md-6 col-sm-12">      
+          <div class="section">
+            <p>You are logged in as <strong>{{userdata.email}}</strong>.</p>
+            <a class="btn btn-danger" href="/account/logout?next=/x/member-registration">Log Out</a>
+          </div>
+        </div>
+      </div>
+
+      {% if done %}
+      <div class="section">
+        <h2>Registration Complete!</h2>
+        <p>Thanks for registering.</p>
+
+        <a href="" class="btn btn-primary">Add a new member</a>
+      </div>
+      {% else %}
+        <div class="row">
+          <div class="col-md-6 col-sm-12">
+            {{render_form()}}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+{% endblock %}
+
+
+{% block extrahead %}
+
+  <style type="text/css">
+    .small {
+      color: gray;
+      font-weight: normal;
+      display: block;
+      margin-top: -2px;
+      margin-bottom: 5px;
+    }
+    label {
+      display: block;
+    }
+    input.radio, input.checkbox {
+      margin-left: 0px !important;
+    }
+
+    .verify-voterid {
+      margin: 5px 0px;
+    }
+
+    .form-group-voterid {
+    }
+
+    .section {
+      border: 1px solid #ddd;
+      background: white;
+      padding: 20px;
+      margin: 20px 0px;
+      border-radius: 10px;
+    }
+    .section h2 {
+      margin-top: 0px;
+    }
+    .hidden2 {
+        display: none;
+    }
+
+    body {
+      background: #ddd;
+    }
+
+    span.ss-required-asterisk {
+      color: red;
+    }
+
+    .disabled {
+      color: #888;
+    }
+    .disabled span.small {
+      color: #aaa;
+    }
+  </style>
+{% endblock %}
+
+
+{% macro render_field(field, help="", class_="") -%}
+    {% if field.errors %}
+        <div class="form-group has-error {{ 'field-required' if field.flags.required else 'field-not-required' }}">
+    {% else %}
+        <div class="form-group {{ 'field-required' if field.flags.required else 'field-not-required' }}">
+    {% endif %}
+        <label for="{{ field.id }}">{{ field.label.text }}
+          {% if field.flags.required %}
+            <span class="ss-required-asterisk" aria-hidden="true">*</span>          
+          {% endif %}
+          <span class="small">{{ help }}</span>          
+        </label>
+        {{ field(class_="form-control " + class_, **kwargs) }}
+        <ul class="help-block list-unstyled">
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{%- endmacro %}
+
+{% macro render_radio(field, help="", class_="radio") -%}
+    <div class="form-group form-group-voterid {{'has-error' if field.errors else ''}}{{ 'field-required' if field.flags.required else 'field-not-required' }}" id="field-{{field.name.replace('_', '-')}}">
+        <label for="{{ field.id }}">{{ field.label.text }}
+          {% if field.flags.required %}
+            <span class="ss-required-asterisk" aria-hidden="true">*</span>          
+          {% endif %}        
+          <span class="small">{{ help }}</span></label>
+
+        {% for option in field %}
+          <label class="{{class_}}">
+            {{option(class_=class_)}} {{option.label}}
+          </label>
+        {% endfor %}
+
+        <ul class="help-block list-unstyled">
+            {% for error in field.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{%- endmacro %}
+
+{% macro render_voterid(field, hidden_field, help="") -%}
+    <div class="form-group form-group-voterid field-required {{'has-error' if field.errors else ''}}" id="field-{{field.name.replace('_', '-')}}">
+      <label for="{{ field.id }}">{{ field.label.text }}
+        {% if field.flags.required %}
+          <span class="ss-required-asterisk" aria-hidden="true">*</span>          
+        {% endif %}        
+        <span class="small">{{ help }}</span>
+      </label>
+      <div>
+        {{ field(class_="form-control voterid", **kwargs) }}
+        {{ hidden_field }}
+        <input type="button" class="verify-voterid" value="Verify Voter ID"/>
+        <div class="voter alert alert-success hidden2">
+            <div><strong><span class="glyphicon glyphicon-ok"></span> Verified!</strong></div>
+            <div class="voter-name"></div>
+            <div class="voter-relname"></div>
+            <div class="voter-age"></div>
+            <div class="voter-lc"></div>
+            <div class="voter-ac"></div>
+            <div class="voter-ward"></div>
+            <div class="voter-part"></div>
+        </div>
+        <div class="novoter alert alert-danger hidden2"><em>Invalid Voter ID</em></div>            
+      </div>
+      <ul class="help-block list-unstyled">
+          {% for error in field.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    </div>
+{%- endmacro %}
+
+{% macro render_form() -%}
+  <form method="POST" class="form">
+    {{ form.csrf_token }}
+
+    <div class="section" id="section-personal">
+      <h2>Personal Details</h2>
+      {{render_field(form.name, help="Your Name")}}
+      {{render_field(form.gender)}}
+      {{render_field(form.phone)}}
+      {{render_field(form.email, help='Capture your Primary E-Mail ID, the one used by you in Social Media (If the volunteer has no e-mail id mention as NA)')}}
+    </div>
+
+    <div class="section" id="section-voterid">
+      <h2>Voter ID</h2>
+
+      <p>Identify your polling booth by providing your Voter ID or Voter ID of your neighbour.
+      </p>
+
+      {{render_radio(form.is_voter_at_residence)}}
+
+      <div class="autodisable on-is-voter-at-residence index-2">
+      {{render_voterid(form.voterid, form.voterid_info, help="Your Voter ID No. as seen on your VOTER ID CARD")}}
+      </div>
+      <div class="autodisable on-is-voter-at-residence index-0">
+      {{render_voterid(form.proxy_voterid, form.proxy_voterid_info, help="VOTER ID of any of your immediate neighbour for mapping your location")}}
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Declaration</h2>
+      <p>I am citizen of India. I am above 18 years , and not enrolled as a government employee. I am not a member of any other political party registered with the Election Commission of India. I am not a member with any organization whose views, policies or actions are in conflict with the objective of the party. I have not been convicted of any offense involving moral turpitude. I have full faith of party’s objective and vision. I hereby consent to receiving any communication from the party either in writing, electronically and/or in any audio-visual format via phone (including SMS/MMS), email and/or at my address.</p>
+
+      <p>The particulars and statements made above are correct to the best of my knowledge and nothing has been concealed or withheld.
+      </p>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+  <script type="text/javascript">
+    $(function() {
+
+      // $("#date_of_birth").datepicker({
+      //   format: 'dd-mm-yyyy'
+      // });
+
+      function replace(template, mapping) {
+        var s = template;
+        for (var pattern in mapping) {
+          var rx = new RegExp(pattern, "g");
+          s = s.replace(rx, mapping[pattern]);
+        }
+
+        return s;
+      }
+
+      $("input[type=radio]").change(function() {
+        var selector = replace("input:radio[name=NAME]", {NAME: $(this).attr("name")});
+
+        var name = $(this).attr("name").replace(/_/g, "-");
+        var value = $(selector+":checked").val();
+        var index = $(selector+":checked").index(selector);
+
+        var mapping = {
+          NAME: name,
+          VALUE: value.replace(/[^a-zA-Z0-9]+/g, '-'),
+          INDEX: index
+        }
+
+        $(replace(".autodisable.on-NAME", mapping))
+          .removeClass("disabled")
+          .find("input").removeAttr("disabled", "disabled");
+
+        $(replace(".autodisable.on-NAME.value-VALUE, .autodisable.on-NAME.index-INDEX", mapping))
+          .addClass("disabled")
+          .find("input").attr("disabled", "disabled");
+      });
+
+      function zeropad(num, length) {
+        var s = "000000" + num;
+        return s.substr(s.length-length, length);
+      }
+
+      function get_parent(place, type) {
+        for (var i in place.parents) {
+          var p = place.parents[i];
+          if (p.type == type) {
+            return p;
+          }
+        }
+        return null;
+      }
+
+      $(".verify-voterid").click(function() {
+        var $parent = $(this).closest(".form-group-voterid");
+        var $hidden = $parent.find("input[type=hidden]");
+        var voterid = $parent.find(".voterid").val();
+        $parent.find(".voter").hide();
+        $parent.find(".novoter").hide();
+        $hidden.val("");
+        $.getJSON("http://voter.missionvistaar.in/search?voterid=" + voterid, function(data) {
+          if (!data) {
+            $parent.find(".novoter").show();
+          }
+          else {
+            $parent.find(".voter").show();
+            $parent.find(".voter-name").html("Name: " + data.name);
+            $parent.find(".voter-relname").html("Rel. Name: " + data.relname);
+            $parent.find(".voter-ac").html("AC: " + data.ac);
+            $parent.find(".voter-part").html("Booth: " + data.part);
+
+            var key = "KA/AC" + zeropad(data.ac, 3) + "/PB" + zeropad(data.part, 4);
+            $.getJSON("http://missionvistaar.in/api/place/" + key, function(place) {
+              var px = get_parent(place, "PX");
+              var ward = get_parent(place, "LB");
+              var ac = get_parent(place, "AC");
+              var lc = get_parent(place, "DISTRICT");
+              if (ward)
+                $parent.find(".voter-ward").html("WARD: " + ward.name.replace(/WA0*/, ""));
+              $parent.find(".voter-ac").html("AC: " + ac.name.replace(/AC0*/, ""));
+              $parent.find(".voter-lc").html("LC: " + lc.name.replace(/PC0*/, ""));
+              $parent.find(".voter-part").html("Booth: " + place.name.replace(/PB0*/, ""));
+
+              var info = {
+                "voterid": voterid,
+                "name": data.name,
+                "relname": data.relname,
+                "gender": data.sex,
+                "age": data.age,
+                "serial": data.serial,
+                "part": data.part,
+                "pb": place.name,
+                "ac": ac.name,
+                "lc": lc.name
+              }
+              if (px)
+                info.px = px.name;
+
+              if (ward)
+                info.ward = ward.name;
+              $hidden.val(JSON.stringify(info));
+            });
+
+          }
+        });
+      });
+    });
+  </script>
+
+{%- endmacro %}
