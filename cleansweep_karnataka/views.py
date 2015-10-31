@@ -28,6 +28,9 @@ def new_signup():
     if not userdata:
         return render_template("new_signup.html", userdata=None)
 
+    # get district or defalt to bangalore (21)
+    district = request.args.get("district", 21)
+
     form = forms.SignupForm()
     if request.method == "GET":
         form.name.data = userdata['name']
@@ -50,7 +53,7 @@ def new_signup():
             # TODO: show error that specified place is not found
             pass
 
-    return render_template("new_signup.html", userdata=userdata, form=form, simple=True)
+    return render_template("new_signup.html", userdata=userdata, form=form, simple=True, district=district)
 
 def _process_signup_data(formdata, user_email):
     data = dict(formdata, submitted_by=user_email)

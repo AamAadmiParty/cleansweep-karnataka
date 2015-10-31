@@ -272,10 +272,11 @@
         var $parent = $(this).closest(".form-group-voterid");
         var $hidden = $parent.find("input[type=hidden]");
         var voterid = $parent.find(".voterid").val();
+        var district = {{district}};
         $parent.find(".voter").hide();
         $parent.find(".novoter").hide();
         $hidden.val("");
-        $.getJSON("http://voter.missionvistaar.in/search?voterid=" + voterid, function(data) {
+        $.getJSON("http://voter.missionvistaar.in/search?voterid=" + voterid + "&district=" + district, function(data) {
           if (!data) {
             $parent.find(".novoter").show();
           }
