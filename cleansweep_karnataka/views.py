@@ -24,12 +24,12 @@ def init_app(app):
 def new_signup():
     userdata = session.get("oauth")
 
-    # is user autheticated?
-    if not userdata:
-        return render_template("new_signup.html", userdata=None)
-
     # get district or defalt to bangalore (21)
     district = request.args.get("district", 21)
+
+    # is user autheticated?
+    if not userdata:
+        return render_template("new_signup.html", userdata=None, district=district)
 
     form = forms.SignupForm()
     if request.method == "GET":

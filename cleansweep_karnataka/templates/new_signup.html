@@ -13,7 +13,7 @@
       <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
       <p>
         {% for provider in get_oauth_providers() %}
-          <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
+          <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name, district=district) }}" class="btn btn-primary">{{provider.title}}</a>
         {% endfor %}
       </p>
       </div>
@@ -22,7 +22,7 @@
         <div class="col-md-6 col-sm-12">      
           <div class="section">
             <p>You are logged in as <strong>{{userdata.email}}</strong>.</p>
-            <a class="btn btn-danger" href="/account/logout?next=/x/member-registration">Log Out</a>
+            <a class="btn btn-danger" href="/account/logout?next=/account/signup">Log Out</a>
           </div>
         </div>
       </div>
