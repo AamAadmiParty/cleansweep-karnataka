@@ -13,7 +13,7 @@
       <p>Please authenticate yourself using the following services to continue with the sign up process.</p>
       <p>
         {% for provider in get_oauth_providers() %}
-          <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name, district=district) }}" class="btn btn-primary">{{provider.title}}</a>
+          <a href="{{ url_for('oauth_redirect', view='signups.signup', provider=provider.name) }}" class="btn btn-primary">{{provider.title}}</a>
         {% endfor %}
       </p>
       </div>
@@ -194,6 +194,50 @@
       <p>Identify your polling booth by providing your Voter ID or Voter ID of your neighbour.
       </p>
 
+      <div class="form-group field-required">
+
+        <label for="district">District
+          <span class="ss-required-asterisk" aria-hidden="true">*</span>
+          <span class="small">Required for verifying the voter ID</span>
+        </label>
+        <select class="form-control" id="district" name="district">
+          <option value="2">ಬಾಗಲಕೋಟೆ / BAGALKOT</option>
+          <option value="21" selected="selected">ಬೃ.ಬೆ.ಮ.ಪಾ / BANGALORE</option>
+          <option value="22">ಬೆಂಗಳೂರು ಗ್ರಾಮಾಂತರ / BANGALORE RURAL</option>
+          <option value="1">ಬೆಳಗಾವಿ / BELGAUM</option>
+          <option value="12">ಬಳ್ಳಾರಿ / BELLARY</option>
+          <option value="5">ಬೀದರ್‌ / BIDAR</option>
+          <option value="3">ವಿಜಾಪೂರ / BIJAPUR</option>
+          <option value="29">ಚಾಮರಾಜನಗರ / CHAMARAJNAGAR</option>
+          <option value="19">ಚಿಕ್ಕಬಳ್ಳಾಪುರ / CHIKKABALLAPUR</option>
+          <option value="17">ಚಿಕ್ಕಮಗಳೂರು / CHIKMAGALUR</option>
+          <option value="13">ಚಿತ್ರದುರ್ಗ / CHITRADURGA</option>
+          <option value="26">ದಕ್ಷಿಣ ಕನ್ನಡ / DAKSHINA KANNADA</option>
+          <option value="14">ದಾವಣಗೆರೆ / DAVANGERE</option>
+          <option value="9">ಧಾರವಾಡ / DHARWAD</option>
+          <option value="8">ಗದಗ / GADAG</option>
+          <option value="4">ಗುಲಬರ್ಗಾ / GULBARGA</option>
+          <option value="25">ಹಾಸನ / HASSAN</option>
+          <option value="11">ಹಾವೇರಿ / HAVERI</option>
+          <option value="27">ಕೊಡಗು / KODAGU</option>
+          <option value="20">ಕೋಲಾರ / KOLAR</option>
+          <option value="7">ಕೊಪ್ಪಳ / KOPPAL</option>
+          <option value="24">ಮಂಡ್ಯ / MANDYA</option>
+          <option value="28">ಮೈಸೂರು / MYSORE</option>
+          <option value="6">ರಾಯಚೂರು / RAICHUR</option>
+          <option value="23">ರಾಮನಗರಂ / RAMANAGARAM</option>
+          <option value="15">ಶಿವಮೊಗ್ಗ / SHIMOGA</option>
+          <option value="18">ತುಮಕೂರು / TUMKUR</option>
+          <option value="16">ಉಡುಪಿ / UDUPI</option>
+          <option value="10">ಉತ್ತರ ಕನ್ನಡ / UTTARA KANNADA</option>
+          <option value="35">ಯಾದಗಿರಿ / YADGIR</option>
+        </select>
+        <ul class="help-block list-unstyled">
+
+        </ul>
+    </div>
+
+
       {{render_radio(form.is_voter_at_residence)}}
 
       <div class="autodisable on-is-voter-at-residence index-2">
@@ -272,7 +316,7 @@
         var $parent = $(this).closest(".form-group-voterid");
         var $hidden = $parent.find("input[type=hidden]");
         var voterid = $parent.find(".voterid").val();
-        var district = {{district}};
+        var district = $("select#district").val();
         $parent.find(".voter").hide();
         $parent.find(".novoter").hide();
         $hidden.val("");
