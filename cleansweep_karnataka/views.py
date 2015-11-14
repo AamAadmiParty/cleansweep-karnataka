@@ -3,7 +3,7 @@ import json
 
 from cleansweep.plugin import Plugin
 from cleansweep.models import Place, db
-from cleansweep.volunteers import signals
+from cleansweep.plugins.volunteers import signals
 
 # required for our second view
 from . import forms
