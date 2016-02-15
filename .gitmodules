@@ -1,0 +1,3 @@
+[submodule "vendor/cleansweep"]
+	path = vendor/cleansweep
+	url = git://github.com/AamAadmiParty/cleansweep.git

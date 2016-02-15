@@ -6,7 +6,7 @@ from cleansweep.models import Place, db
 from cleansweep.plugins.volunteers import signals
 
 # required for our second view
-from . import forms
+from . import forms, stats
 
 plugin = Plugin("karnataka", __name__, template_folder="templates")
 
