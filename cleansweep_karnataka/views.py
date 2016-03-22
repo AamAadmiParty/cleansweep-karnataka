@@ -33,8 +33,10 @@ def new_signup():
 
     form = forms.SignupForm()
     if request.method == "GET":
-        form.name.data = userdata['name']
-        form.email.data = userdata['email']
+        ## Anand - Commented on request by Tarak - March 2016
+        # form.name.data = userdata['name']
+        # form.email.data = userdata['email']
+        pass
     elif request.method == "POST" and form.validate():
         data = _process_signup_data(form.data, userdata['email'])
         place = data.get('place_key') and Place.find(data['place_key'])
