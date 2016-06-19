@@ -8,15 +8,16 @@ from wtforms import (
 
 from cleansweep.models import Member
 
-def radio_field(label, values, **kwargs):
+def radio_field(label, values,  **kwargs):
     choices = [(v, v) for v in values]
 
     required = kwargs.pop("required", False)
+    default = kwargs.pop("default", "")
     if not required:
         choices += [("", "Not Specified")]
     else:
         kwargs['validators'] = [validators.Required()]
-    return RadioField(label, choices=choices, default="", **kwargs)
+    return RadioField(label, choices=choices, default=default, **kwargs)
 
 def checkbox_field(label, values, validators=None):
     return SelectMultipleField(
@@ -40,7 +41,11 @@ class SignupForm(Form):
     phone = StringField('Personal Mobile No.', [validators.Required()])
     email = StringField('Personal E-Mail ID', [validators.Required()])
 
-    is_voter_at_residence = radio_field("Is your Voter ID address same as your residential address?", ['YES', 'NO', "I don't have a valid Voter ID"], required=True)
+    is_voter_at_residence = radio_field(
+        "Is your Voter ID address same as your residential address?",
+        ['YES', 'NO', "I don't have a valid Voter ID"],
+        required=True,
+        default="YES")
     voterid = StringField("Personal Voter ID")
     voterid_info = HiddenField()
     proxy_voterid = StringField("Proxy Voter ID")
