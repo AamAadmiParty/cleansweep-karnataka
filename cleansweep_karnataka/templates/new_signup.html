@@ -332,7 +332,7 @@
             $parent.find(".voter-part").html("Booth: " + data.part);
 
             var key = "KA/AC" + zeropad(data.ac, 3) + "/PB" + zeropad(data.part, 4);
-            $.getJSON("http://missionvistaar.in/api/place/" + key, function(place) {
+            $.getJSON("/api/place/" + key, function(place) {
               var px = get_parent(place, "PX");
               var ward = get_parent(place, "LB");
               var ac = get_parent(place, "AC");
