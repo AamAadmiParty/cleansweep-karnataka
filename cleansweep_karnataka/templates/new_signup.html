@@ -320,7 +320,7 @@
         $parent.find(".voter").hide();
         $parent.find(".novoter").hide();
         $hidden.val("");
-        $.getJSON("http://voter-search.missionvistaar.in/search?voterid=" + voterid + "&district=" + district, function(data) {
+        $.getJSON("https://voter-search.missionvistaar.in/search?voterid=" + voterid + "&district=" + district, function(data) {
           if (!data) {
             $parent.find(".novoter").show();
           }
